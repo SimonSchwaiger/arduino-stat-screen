@@ -21,8 +21,10 @@ try:
     print("Connected to: " + ser.portstr)
 except IOError:
     print ("Serial error" + "\n Exiting Serial Connection \n")
+    quit()
 except OSError:
     print ("Serial error" + "\n Exiting Serial Connection \n")
+    quit()
 
 # wait for initialisation to be done
 time.sleep(2)
@@ -46,7 +48,7 @@ subscriber.setsockopt( zmq.LINGER, 0 )
 subscriber.setsockopt_string(zmq.SUBSCRIBE, 'G')
 subscriber.connect("tcp://127.0.0.1:5678")
 
-# send data static system info
+""" Send data of static system info """
 while True:
     _, plugin, data_raw = subscriber.recv_multipart()
     data = json.loads(data_raw)
@@ -60,7 +62,7 @@ while True:
     data = json.loads(data_raw)
     if plugin == b'mem':
         # ram total
-        send_display_data("Ram_Amount", int(round(data['total']/1000000000, 0)))
+        send_display_data("Ram_Amount", int(round(data['total']*1.25/1000000000, 0)))
         break
 
 while True:
@@ -73,7 +75,7 @@ while True:
         break
 
 
-# poll changing data and send it to the display
+""" Poll changing data and send it to the display """
 try:
     while True:
         # load new dataset
@@ -85,8 +87,16 @@ try:
             send_display_data("Package_Temp", data['Package id 0.value'])
             # cpu edge temp
             send_display_data("Edge_Temp", data['edge.value'])
-            # gpu package temp
-            # not working atm
+            # gpu package temp, reported wrong in glances for amdgpu atm
+            #try:
+            #    send_display_data("GPU_Temp", data['amdgpu 1.value'])
+            #except KeyError:
+            #    pass
+            # gpu package temp nvidia, need nvidia gpu to test
+            #try:
+            #    send_display_data("GPU_Temp", data['nvidia'])
+            #except KeyError:
+            #    pass
         elif plugin == b'cpu':
             # cpu usage
             send_display_data("Cpu_Usage", int(round(data['total'], 0)))
