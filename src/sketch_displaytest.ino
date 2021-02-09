@@ -46,7 +46,7 @@ inline int count_occurence(const char *s, char c) {
 
 /* Draw Box at height of current line of defined depht */
 #define BOX(size, color) tft.drawRect(PADDING, count_occurence(displayData,'\n')*ROW_HEIGHT+PADDING, \
-                                      SCREEN_WIDTH-2*PADDING, size*ROW_HEIGHT, color); //x, y, w, h color
+                                      SCREEN_WIDTH-2*PADDING, size*ROW_HEIGHT-PADDING, color); //x, y, w, h color
 
 /* Percent Bar */
 #define BAR(percent, width) PRINT_STRING("[") \
@@ -66,6 +66,7 @@ inline int count_occurence(const char *s, char c) {
 #define RAM_AMOUNT sprintf(&displayData[0] + strlen(displayData), "%3dGb", ram_amount);
 #define RAM_USAGE sprintf(&displayData[0] + strlen(displayData), "%3d%% Used", ram_usage);
 
+#define GPU_TEMP sprintf(&displayData[0] + strlen(displayData), "%3dC Temp", gpu_temp);
 
 /*
  * TODOs:
@@ -177,19 +178,23 @@ void updateDisplay() {
   memset(&displayData[0],0,sizeof(displayData));
 
   /* NEW DISPLAY CONFIGURATION - Portrait Mode */
-  BOX(12,WHITE)
+  BOX(9,WHITE)
   SPACE PRINT_STRING("   XEON E5-2690 V2") NEWLINE
   SPACES(7) NUM_CORES NEWLINES(2)
   SPACES(10) CPU_USAGE NEWLINE
   SPACE BAR(cpu_usage,16) NEWLINES(2)
   SPACES(10) PACKAGE_TEMP NEWLINE
   SPACE BAR(package_temp,16) NEWLINES(2)
-  SPACES(10) EDGE_TEMP NEWLINE
-  SPACE BAR(edge_temp,16) NEWLINES(3)
+
   BOX(5,WHITE)
   SPACE PRINT_STRING("       32Gb of RAM") NEWLINES(2)
   SPACES(10) RAM_USAGE NEWLINE
-  SPACE BAR(ram_usage,16)
+  SPACE BAR(ram_usage,16) NEWLINES(2)
+
+  BOX(5,WHITE)
+  SPACE PRINT_STRING(" Radeon RX 5700 XT") NEWLINES(2)
+  SPACES(10) GPU_TEMP NEWLINE
+  SPACE BAR(gpu_temp,16)
 
   /* NEW DISPLAY CONFIGURATION  - Horizontal Mode 
   BOX(8,WHITE)
